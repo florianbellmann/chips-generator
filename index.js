@@ -28,8 +28,13 @@ dotenv.config();
 
   const chipsDiv = await page.$("#header-user-chips")
   const newChips = (await page.evaluate(chipsDiv => chipsDiv.textContent, chipsDiv)).trim().replace(",", "")
+
   console.log("New Chips: ", newChips)
   fs.writeFileSync("chips", newChips)
+  fs.appendFile('run.log', `Script run at ${new Date()}. New Chips: ${newChips}.\r\n`, function (err) {
+    if (err) throw err;
+    console.log('Saved!');
+  });
 
   await browser.close()
 })()
