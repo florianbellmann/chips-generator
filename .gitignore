@@ -4,3 +4,6 @@ node_modules
 screen.png
 .env
 run.log
+launch.log
+hello-errors.txt
+hello-output.txt
