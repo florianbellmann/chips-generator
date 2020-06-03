@@ -2,7 +2,7 @@ FROM node:10-slim
 LABEL name "puppeteraas"
 
 # See https://crbug.com/795759
-RUN apt-get update && apt-get install -yq libgconf-2-4
+RUN apt-get update && apt-get install -yq libgconf-2-4 gnupg gnupg1 gnupg2
 
 # Install latest chrome dev package and fonts to support major 
 # charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
@@ -27,28 +27,6 @@ RUN chmod +x /usr/local/bin/dumb-init
 # If you do, you'll need to launch puppeteer with:
 #     browser.launch({executablePath: 'google-chrome-unstable'})
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
-
-# Copy the app
-COPY . /app/
-#COPY local.conf /etc/fonts/local.conf
-WORKDIR app
-RUN npm i
-
-# Add user so we don't need --no-sandbox.
-RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
-    && mkdir -p /home/pptruser/Downloads \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser ./node_modules
-
-# Run everything after as non-privileged user.
-USER pptruser
-
-EXPOSE 8084
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["npm", "run", "start"]
-Um es einfach zu halten, habe ich den Großteil der Logik in ein neues Docker-Container-Skript namens “kinlan: puppets” abstrahiert, mit dem Sie die Bereitstellung Ihrer Anwendung anpassen können.
-
-FROM kinlan/puppets:latest
 
 # Copy the app
 COPY . /app/
