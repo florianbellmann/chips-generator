@@ -10,7 +10,9 @@ dotenv.config();
   console.log("Old Chips: ", oldChips)
   
   console.log("Launching browser and visitting site...")
-  const browser = await puppeteer.launch()
+  const browser = await puppeteer.launch({ executablePath: 'chromium-browser' });
+  //const browser = await puppeteer.launch()
+  
   const page = await browser.newPage()
   await page.goto(process.env.website)
 
