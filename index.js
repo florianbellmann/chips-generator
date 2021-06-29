@@ -19,7 +19,7 @@ dotenv.config();
   console.log("Logging in...")
   await page.type('#login', process.env.username)
   await page.type('#password', process.env.password)
-  await page.click('input[type=submit]')
+  await page.click('button[type=submit]')
 
   // await page.waitForNavigation()
   await delay(2000)
