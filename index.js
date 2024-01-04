@@ -9,7 +9,7 @@ dotenv.config();
   console.log("Old Chips: ", oldChips);
 
   console.log("Launching browser and visitting site...");
-  const browser = await playwright.chromium.launch();
+  const browser = await playwright.firefox.launch();
 
   const page = await (await browser.newContext()).newPage();
   await page.goto(process.env.website);
