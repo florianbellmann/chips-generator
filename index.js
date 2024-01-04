@@ -9,18 +9,32 @@ dotenv.config();
   console.log("Old Chips: ", oldChips);
 
   console.log("Launching browser and visitting site...");
-  const browser = await playwright.chromium.launch();
+  const browser = await playwright.chromium.launch({ headless: false });
 
   const page = await (await browser.newContext()).newPage();
   await page.goto(process.env.website);
 
-  console.log("Logging in...");
-  await page.click("#onetrust-accept-btn-handler");
-  await page.waitForLoadState("networkidle"); // wait for the page to be loaded
+  try {
+    console.log("accepting cookies");
+    await page.locator("#onetrust-accept-btn-handler").click();
+  } catch (error) {
+    console.log("no popup found");
+  }
 
-  await page.type("#login", process.env.username);
-  await page.type("#password", process.env.password);
-  await page.click("button[type='submit']");
+  console.log("Logging in...");
+  await page.waitForLoadState("networkidle");
+  console.log("filling user");
+
+  await page.locator("#login").fill(process.env.username);
+  console.log("filling password");
+  await page.locator("#password").fill(process.env.password);
+
+  await page.waitForTimeout(3000);
+
+  // await page.type("#login", process.env.username);
+  // await page.type("#password", process.env.password);
+  await page.click("button[type='submit'].btn");
+  console.log("submitted");
   try {
     await page.locator(".inApp-close").click();
   } catch (error) {
@@ -44,7 +58,7 @@ dotenv.config();
     function (err) {
       if (err) throw err;
       console.log("Saved!");
-    }
+    },
   );
 
   await browser.close();
