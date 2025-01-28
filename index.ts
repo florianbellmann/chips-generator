@@ -3,7 +3,7 @@ import fs from "fs";
 
 const config = {
 	BASE_URL: Bun.env.BASE_URL!,
-	HEADLESS: false,
+	HEADLESS: true,
 	USERNAME: Bun.env.USERNAME!,
 	PASSWORD: Bun.env.PASSWORD!,
 };
