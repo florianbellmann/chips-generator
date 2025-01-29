@@ -2,12 +2,11 @@
 
 set -euo pipefail
 
-# Check if bun is installed
-#
-
 export $(cat ".env")
 
-if [ ! -f /usr/local/bin/bun ]; then
+# Check if bun is installed
+if ! command -v bun 2>&1 >/dev/null
+then
   echo "Bun is not installed. Installing bun..."
   curl -fsSL https://bun.sh/install | bash
 fi
