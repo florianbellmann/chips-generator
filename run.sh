@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-export $(cat ".env")
+export $(cat .env)
 
 # Check if bun is installed
 if ! command -v bun 2>&1 >/dev/null

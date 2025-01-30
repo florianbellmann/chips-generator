@@ -2,10 +2,10 @@ import { chromium } from "playwright";
 import fs from "fs";
 
 const config = {
-	BASE_URL: Bun.env.BASE_URL!,
-	HEADLESS: true,
-	USERNAME: Bun.env.USERNAME!,
-	PASSWORD: Bun.env.PASSWORD!,
+	BASE_URL: Bun.env.BASE_URL!.replaceAll('"', "").replaceAll("'", ""),
+	HEADLESS: false,
+	USERNAME: Bun.env.USERNAME!.replaceAll('"', "").replaceAll("'", ""),
+	PASSWORD: Bun.env.PASSWORD!.replaceAll('"', "").replaceAll("'", ""),
 };
 
 function forceWait(time: number) {
@@ -39,18 +39,18 @@ async function run() {
 	console.log(`Navigating to ${config.BASE_URL}`);
 	await page.goto(config.BASE_URL);
 
-	try {
-		console.log("accepting cookies");
-		await page.locator("#onetrust-accept-btn-handler").click();
-	} catch (error) {
-		console.log("no popup found");
-	}
+	//try {
+	//	console.log("accepting cookies");
+	//	await page.locator("#onetrust-accept-btn-handler").click();
+	//} catch (error) {
+	//	console.log("no popup found");
+	//}
 
-	await page.waitForLoadState("networkidle");
+	//await page.waitForLoadState("networkidle");
 
 	console.log("filling user", config.USERNAME);
 	await page.locator("#login").fill(config.USERNAME);
-	console.log("filling password");
+	console.log("filling password", config.PASSWORD);
 	await page.locator("#password").fill(config.PASSWORD);
 
 	//await page.waitForTimeout(3000);
