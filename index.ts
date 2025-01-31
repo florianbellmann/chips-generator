@@ -50,7 +50,7 @@ async function run() {
 
 	console.log("filling user", config.USERNAME);
 	await page.locator("#login").fill(config.USERNAME);
-	console.log("filling password", config.PASSWORD);
+	//console.log("filling password", config.PASSWORD);
 	await page.locator("#password").fill(config.PASSWORD);
 
 	//await page.waitForTimeout(3000);

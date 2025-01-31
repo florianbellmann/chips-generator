@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+cd /home/flo/chips-generator
+
 export $(cat .env)
 
 # Check if bun is installed
@@ -11,6 +13,8 @@ then
   curl -fsSL https://bun.sh/install | bash
 fi
 
-bun index.ts >> app.log 2>&1 || bunx playwright install && bunx playwright install-deps && bun index.ts >> app.log 2>&1
+npx playwright install
+
+/home/flo/.bun/bin/bun index.ts >> app.log 2>&1
 
 exit 0
