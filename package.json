@@ -2,14 +2,17 @@
   "name": "chips-generator",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "start": "tsx index.ts"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/node": "^22.10.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "playwright-core": "^1.50.0"
+    "playwright-core": "^1.50.0",
+    "tsx": "^4.19.2"
   }
 }
-
