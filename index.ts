@@ -1,4 +1,4 @@
-import { chromium } from "playwright";
+import { chromium } from "playwright-core";
 import fs from "fs";
 
 function requiredEnv(name: string) {
@@ -11,9 +11,12 @@ function requiredEnv(name: string) {
 
 const config = {
 	BASE_URL: requiredEnv("BASE_URL"),
-	HEADLESS: true,
 	USERNAME: requiredEnv("USERNAME"),
 	PASSWORD: requiredEnv("PASSWORD"),
+	// CDP endpoint of the shared headless Chromium instance, e.g.
+	// http://192.168.178.161:3000. This script does not launch a browser of its
+	// own, which is why the dependency is playwright-core (no bundled browser).
+	BROWSER_ENDPOINT: requiredEnv("BROWSER_ENDPOINT"),
 };
 
 function forceWait(time: number) {
@@ -49,9 +52,16 @@ function logRun(newChips: string) {
 }
 
 async function run() {
-	const browser = await chromium.launch({ headless: config.HEADLESS });
+	console.log(`Connecting to remote browser at ${config.BROWSER_ENDPOINT}`);
+	const browser = await chromium.connectOverCDP(config.BROWSER_ENDPOINT);
+
+	// A dedicated context per run, rather than reusing the browser's default
+	// one. The remote Chromium is long-lived and shared with other automations,
+	// so this keeps the logged-in session out of the shared profile and starts
+	// every run from a clean cookie jar.
+	const context = await browser.newContext();
 	try {
-		const page = await browser.newPage();
+		const page = await context.newPage();
 
 		console.log(`Navigating to ${config.BASE_URL}`);
 		await page.goto(config.BASE_URL);
@@ -98,6 +108,11 @@ async function run() {
 		// Add to log
 		logRun(newChips);
 	} finally {
+		// Close our own context but leave the browser running: it is a shared,
+		// long-lived instance owned by the headless-chrome host, and closing it
+		// would tear it down for every other consumer. Disconnecting only drops
+		// this client's CDP session.
+		await context.close();
 		await browser.close();
 	}
 }
