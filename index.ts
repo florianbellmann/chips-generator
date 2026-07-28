@@ -2,7 +2,7 @@ import { chromium } from "playwright-core";
 import fs from "fs";
 
 function requiredEnv(name: string) {
-	const value = Bun.env[name]?.replaceAll('"', "").replaceAll("'", "").trim();
+	const value = process.env[name]?.replaceAll('"', "").replaceAll("'", "").trim();
 	if (!value) {
 		throw new Error(`Missing required environment variable: ${name}`);
 	}
