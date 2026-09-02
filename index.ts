@@ -147,6 +147,18 @@ async function runAccount(browser: Awaited<ReturnType<typeof chromium.connectOve
 		const page = await context.newPage();
 		output("log", `[${account.label}] Navigating to ${config.baseUrl}`);
 		await page.goto(config.baseUrl);
+
+		try {
+			// Every context starts with a clean cookie jar (see above), so this
+			// consent overlay appears on every single run and, left unhandled,
+			// sits on top of the login form and silently swallows the "Log in"
+			// click - the form never submits and the run times out waiting for
+			// post-login content with no error at the click site itself.
+			await page.getByRole("button", { name: "Accept All" }).click({ timeout: 3_000 });
+		} catch {
+			// Already dismissed, or this site instance didn't show it.
+		}
+
 		await page.locator("#login").fill(account.username);
 		await page.locator("#password").fill(account.password);
 		await page.getByRole("button", { name: "Log in" }).click();
