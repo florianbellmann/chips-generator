@@ -15,7 +15,14 @@ function output(level: "log" | "warn" | "error", message: string) {
 }
 
 function envValue(name: string) {
-	return process.env[name]?.replaceAll('"', "").replaceAll("'", "").trim();
+	const raw = process.env[name];
+	if (raw === undefined) return raw;
+	const trimmed = raw.trim();
+	// Strip one matching pair of wrapping quotes (shell-style .env quoting),
+	// not every quote character in the value: stripping every quote corrupts
+	// JSON values like ACCOUNTS, which legitimately contain many quotes.
+	const wrapped = /^(["'])([\s\S]*)\1$/.exec(trimmed);
+	return wrapped ? wrapped[2] : trimmed;
 }
 
 function requiredEnv(name: string) {
