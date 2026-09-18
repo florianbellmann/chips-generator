@@ -170,6 +170,17 @@ async function runAccount(browser: Awaited<ReturnType<typeof chromium.connectOve
 		}
 
 		await wait(4_000);
+
+		// A failed login (wrong credentials, or a temporary lockout after too
+		// many failed attempts) re-renders the login form with an error message
+		// inside .card-body instead of redirecting. Surface that message
+		// directly instead of letting the run fail 15s later with an opaque
+		// "chips count not found" error.
+		const loginErrorText = await page.locator("form .card .card-body").first().textContent({ timeout: 1_000 }).catch(() => null);
+		if (loginErrorText?.trim()) {
+			throw new Error(`Login rejected: ${loginErrorText.trim()}. Current URL: ${page.url()}`);
+		}
+
 		const chipsText = await page.locator(".header-user-chips").textContent({ timeout: 15_000 });
 		if (!chipsText) throw new Error(`Could not find chips count after login. Current URL: ${page.url()}`);
 
